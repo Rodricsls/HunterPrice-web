@@ -1,6 +1,6 @@
 import { commitSession, destroySession, getSession } from "./session.server";
 
-const API_URL = "http://192.168.1.28:8080/api"; // Cambia esto a la URL de tu servidor
+const API_URL = "https://api.hunterprice.online/api"; // Cambia esto a la URL de tu servidor
 
 export async function loginUser(
     email: string,
