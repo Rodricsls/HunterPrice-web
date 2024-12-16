@@ -33,12 +33,11 @@ export async function signUpUser(
     email: string,
     password: string,
     nombre: string,
-    genero: string,
 ) {
     const response = await fetch(`${API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, nombre, genero }),
+        body: JSON.stringify({ email, password, nombre }),
     });
 
     if (!response.ok) {

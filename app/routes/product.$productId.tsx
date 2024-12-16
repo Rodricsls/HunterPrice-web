@@ -89,50 +89,44 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   
 
 // Action to handle rating submission
-export const action: ActionFunction = async ({ request, params}) => {
-    const formData = await request.formData();
-    const productId = params.productId;
-    
-    const rating = formData.get("rating") as string;
+export const action: ActionFunction = async ({ request, params }) => {
+  const formData = await request.formData();
+  const productId = params.productId;
 
-    let userId = formData.get("userId") as string;
+  let userId = formData.get("userId") as string;
+  const rating = formData.get("rating") as string;
 
-    if(userId === "user-id"){
-        const session = await getSession(request.headers.get("Cookie"));
-        userId = session.get("user").id;
+  if (userId === "user-id") {
+    const session = await getSession(request.headers.get("Cookie"));
+    userId = session.get("user").id;
+  }
+
+  if (!productId || !userId || !rating) {
+    return json({ error: "Faltan datos requeridos para enviar la calificación." }, { status: 400 });
+  }
+
+  if (userId === "0") {
+    return json({ error: "Debes iniciar sesión para calificar este producto." }, { status: 403 });
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/rateProduct`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, userId, rating }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return json({ error: errorData.error || "Error al calificar el producto." }, { status: response.status });
     }
-  
-    // Validate input data
-    if (!productId || !userId || !rating) {
-      console.error("Missing input data:", { productId, userId, rating });
-      return json({ error: "Faltan datos requeridos para enviar la calificación." }, { status: 400 });
-    }
-  
-    if (userId === "0") {
-      return json({ error: "Debes iniciar sesión para calificar este producto." }, { status: 403 });
-    }
-  
-    try {
-      // Send the rating to the external API
-      const response = await fetch(`${API_BASE_URL}/rateProduct`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, userId, rating }),
-      });
-  
-      // Check API response
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("API Error:", errorData);
-        return json({ error: errorData.error || "Error al calificar el producto." }, { status: response.status });
-      }
-  
-      return json({ message: "Calificación enviada con éxito." });
-    } catch (error) {
-      console.error("Unexpected Error:", error);
-      return json({ error: "Error inesperado al enviar la calificación." }, { status: 500 });
-    }
-  };
+
+    return json({ message: "Calificación enviada con éxito." });
+  } catch (error) {
+    return json({ error: "Error inesperado al enviar la calificación." }, { status: 500 });
+  }
+};
+
 
 export default function ProductDetails({ params }: { params: any }) {
   
@@ -149,7 +143,6 @@ export default function ProductDetails({ params }: { params: any }) {
   const [storesWithLocation, setStoresWithLocation] = useState(productData.stores);
   const [isLiked, setIsLiked] = useState<boolean | null>(null); // Initialize as null to indicate loading state
   const [isDialogOpen, setIsDialogOpen] = useState(false); // State to control dialog visibility
-  const optimizedUrl = `https://res.cloudinary.com/demo/image/fetch/w_800,h_800,c_fill/${productData.imageUrl}`;
   const [isHydrated, setIsHydrated] = useState(false);
   const navigate = useNavigate();
 
@@ -289,10 +282,12 @@ export default function ProductDetails({ params }: { params: any }) {
                    strokeWidth="2"
                  >
                    <path
-                     strokeLinecap="round"
-                     strokeLinejoin="round"
-                     d="M12 4.318l1.947 3.946 4.36.634-3.154 3.075.743 4.34L12 14.456 8.104 16.313l.743-4.34L5.693 8.898l4.36-.634L12 4.318z"
-                   />
+  stroke="currentColor"
+  fill="none"
+  strokeWidth="2"
+  d="M2 18 L6 10 L10 14 L14 6 L18 12"
+/>
+
                  </svg>
                </button>
              </TooltipTrigger>

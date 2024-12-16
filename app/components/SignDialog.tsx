@@ -57,31 +57,6 @@ export default function SignupDialog({ isOpen, onClose }: { isOpen: boolean; onC
             <Label htmlFor="password">Contraseña</Label>
             <Input id="password" name="password" type="password" placeholder="Contraseña" className="w-full bg-white text-black" required />
           </div>
-          <div>
-            <Label>Género</Label>
-            <div className="flex items-center space-x-4 mt-2">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="genero"
-                  value="M"
-                  className="mr-2 bg-white text-customorange"
-                  required
-                />
-                Mujer (M)
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="genero"
-                  value="H"
-                  className="mr-2 bg-white text-customorange"
-                  required
-                />
-                Hombre (H)
-              </label>
-            </div>
-          </div>
           {fetcher.data?.error && <p className="text-red-500 text-sm">{fetcher.data.error}</p>}
           <DialogFooter>
             <button
